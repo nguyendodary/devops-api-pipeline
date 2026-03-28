@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+logs/
+*.log
+.env
+.env.production
+.env.test
+.prisma/
+generated/

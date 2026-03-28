@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+coverage
+.env
+.env.*
+!.env.example
+logs
+.git
+.github
+.husky
+*.md
+jest.config.js
+eslint.config.mjs
+.prettierrc
+tests
+nodemon.json
+k8s
