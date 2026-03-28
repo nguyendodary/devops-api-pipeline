@@ -196,27 +196,71 @@ After running `npm run db:seed` (or the Docker seed command), you can log in wit
 ## Project Structure
 
 ```
-├── src/
-│   ├── server.js              # Entry point, graceful shutdown
-│   ├── app.js                 # Express app setup, middleware
-│   ├── config/
-│   │   ├── database.js        # Prisma client setup
-│   │   ├── environment.js     # Env var validation (Zod)
-│   │   └── swagger.js         # OpenAPI spec
-│   ├── controllers/           # Request handlers
-│   ├── middleware/             # Auth, validation, error handling
-│   ├── routes/                # Route definitions
-│   ├── services/              # Business logic
-│   └── utils/                 # Logger, errors, JWT helpers
+.
+├── .dockerignore
+├── .env.docker              # Docker Compose env template
+├── .env.example             # Local development env template
+├── .github/
+│   └── workflows/
+│       └── ci.yml           # GitHub Actions CI/CD pipeline
+├── .gitignore
+├── .husky/
+│   └── pre-commit           # Pre-commit lint hook
+├── .prettierrc              # Prettier config
+├── Dockerfile               # Multi-stage production build
+├── README.md
+├── docker-compose.yml       # Local dev stack (API + PostgreSQL + migrations)
+├── eslint.config.mjs        # ESLint flat config
+├── jest.config.js           # Jest test config
+├── k8s/
+│   ├── api-deployment.yml   # API Deployment (2 replicas)
+│   ├── api-service.yml      # NodePort service
+│   ├── configmap.yml        # ConfigMap + Secret
+│   ├── ingress.yml          # Nginx ingress
+│   └── postgres.yml         # PostgreSQL Deployment + PVC
+├── nodemon.json             # Nodemon config (watch src/ only)
+├── package.json
+├── package-lock.json
 ├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── seed.js                # Database seeder
-├── public/                    # Dashboard frontend (static)
-├── tests/                     # Integration tests
-├── k8s/                       # Kubernetes manifests
-├── Dockerfile                 # Multi-stage production build
-├── docker-compose.yml         # Local dev stack
-└── .github/workflows/ci.yml   # CI/CD pipeline
+│   ├── schema.prisma        # Database schema (User, Task)
+│   └── seed.js              # Database seeder
+├── public/                  # Dashboard frontend (static files)
+│   ├── css/style.css
+│   ├── index.html
+│   └── js/app.js
+├── src/
+│   ├── app.js               # Express app setup, middleware
+│   ├── server.js            # Entry point, graceful shutdown
+│   ├── config/
+│   │   ├── database.js      # Prisma client setup
+│   │   ├── environment.js   # Env var validation (Zod)
+│   │   └── swagger.js       # OpenAPI 3.0 spec
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── taskController.js
+│   │   ├── userController.js
+│   │   └── validators.js    # Zod request schemas
+│   ├── middleware/
+│   │   ├── auth.js          # JWT authenticate + authorize
+│   │   ├── errorHandler.js  # Central error handler
+│   │   ├── rateLimiter.js   # Express rate limiter
+│   │   └── validate.js      # Zod validation middleware
+│   ├── routes/
+│   │   ├── index.js         # Route aggregator
+│   │   ├── authRoutes.js
+│   │   ├── healthRoutes.js
+│   │   ├── taskRoutes.js
+│   │   └── userRoutes.js
+│   ├── services/
+│   │   ├── authService.js
+│   │   ├── taskService.js
+│   │   └── userService.js
+│   └── utils/
+│       ├── errors.js        # Custom error classes
+│       ├── logger.js        # Winston logger
+│       └── tokens.js        # JWT sign/verify helpers
+└── tests/
+    └── api.test.js          # Integration tests
 ```
 
 ## Testing
@@ -250,19 +294,21 @@ npm run format
 
 ## NPM Scripts
 
-| Command               | Description                      |
-| --------------------- | -------------------------------- |
-| `npm run dev`         | Start with nodemon (auto-reload) |
-| `npm start`           | Start production server          |
-| `npm test`            | Run tests with coverage          |
-| `npm run lint`        | ESLint check                     |
-| `npm run lint:fix`    | ESLint auto-fix                  |
-| `npm run format`      | Prettier format                  |
-| `npm run db:generate` | Generate Prisma client           |
-| `npm run db:push`     | Push schema to database          |
-| `npm run db:migrate`  | Create named migration           |
-| `npm run db:seed`     | Seed database                    |
-| `npm run db:studio`   | Open Prisma Studio               |
+| Command                   | Description                      |
+| ------------------------- | -------------------------------- |
+| `npm run dev`             | Start with nodemon (auto-reload) |
+| `npm start`               | Start production server          |
+| `npm test`                | Run tests with coverage          |
+| `npm run test:watch`      | Run tests in watch mode          |
+| `npm run lint`            | ESLint check                     |
+| `npm run lint:fix`        | ESLint auto-fix                  |
+| `npm run format`          | Prettier format                  |
+| `npm run db:generate`     | Generate Prisma client           |
+| `npm run db:push`         | Push schema to database          |
+| `npm run db:migrate`      | Create named migration           |
+| `npm run db:migrate:prod` | Deploy migrations (production)   |
+| `npm run db:seed`         | Seed database                    |
+| `npm run db:studio`       | Open Prisma Studio               |
 
 ## Kubernetes (Minikube)
 
